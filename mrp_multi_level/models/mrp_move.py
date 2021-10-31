@@ -36,9 +36,9 @@ class MrpMove(models.Model):
         store=True,
     )
 
-    current_date = fields.Date(string="Current Date")
-    current_qty = fields.Float(string="Current Qty")
-    mrp_date = fields.Date(string="MRP Date")
+    current_date = fields.Date()
+    current_qty = fields.Float()
+    mrp_date = fields.Date()
     planned_order_up_ids = fields.Many2many(
         comodel_name="mrp.planned.order",
         relation="mrp_move_planned_order_rel",
@@ -86,7 +86,6 @@ class MrpMove(models.Model):
             ("to approve", "To Approve"),
             ("approved", "Approved"),
         ],
-        string="State",
     )
     stock_move_id = fields.Many2one(
         comodel_name="stock.move", string="Stock Move", index=True

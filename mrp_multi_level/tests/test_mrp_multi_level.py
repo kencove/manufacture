@@ -212,7 +212,7 @@ class TestMrpMultiLevel(TestMrpMultiLevelCommon):
             [("product_mrp_area_id.product_id", "=", self.fp_1.id)]
         )
         self.mrp_inventory_procure_wiz.with_context(
-            {
+            **{
                 "active_model": "mrp.inventory",
                 "active_ids": mrp_inv.ids,
                 "active_id": mrp_inv.id,

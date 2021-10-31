@@ -116,7 +116,6 @@ class MrpInventoryProcureItem(models.TransientModel):
     warehouse_id = fields.Many2one(string="Warehouse", comodel_name="stock.warehouse")
     location_id = fields.Many2one(string="Location", comodel_name="stock.location")
     supply_method = fields.Selection(
-        string="Supply Method",
         selection=[
             ("buy", "Buy"),
             ("none", "Undefined"),

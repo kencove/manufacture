@@ -28,7 +28,7 @@ class MultiLevelMrp(models.TransientModel):
         product_obj = self.env["product.product"]
         location_ids = product_mrp_area.mrp_area_id._get_locations()
         for location in location_ids:
-            product_l = product_obj.with_context({"location": location.id}).browse(
+            product_l = product_obj.with_context(**{"location": location.id}).browse(
                 product_mrp_area.product_id.id
             )
             qty_available += product_l.qty_available
@@ -436,7 +436,7 @@ class MultiLevelMrp(models.TransientModel):
 
     @api.model
     def _exclude_from_mrp(self, product, mrp_area):
-        """ To extend with various logic where needed. """
+        """To extend with various logic where needed."""
         product_mrp_area = self.env["product.mrp.area"].search(
             [("product_id", "=", product.id), ("mrp_area_id", "=", mrp_area.id)],
             limit=1,
