@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+
+        <record id="mrp_bom_form_view" model="ir.ui.view">
+            <field name="name">mrp.bom.form.view</field>
+            <field name="model">mrp.bom</field>
+            <field name="inherit_id" ref="mrp.mrp_bom_form_view" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='operation_ids']" position="before">
+                    <label for="routing_id" />
+                    <field name="routing_id" />
+                </xpath>
+                <xpath expr="//field[@name='operation_ids']" position="attributes">
+                    <attribute
+                        name="attrs"
+                    >{'invisible': [('type','not in',('normal','phantom'))], 'readonly': [('routing_id', '!=', False)]}</attribute>
+                    <attribute name="force_save">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
