@@ -2,13 +2,18 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 from odoo import api, fields, models
 
+from .mrp_routing_workcenter_template import FIELDS_TO_SYNC
+
 
 class MrpBom(models.Model):
 
     _inherit = "mrp.bom"
 
     routing_id = fields.Many2one(
-        comodel_name="mrp.routing", string="Routing", check_company=True, tracking=True
+        comodel_name="mrp.routing",
+        string="Predefined Operations",
+        check_company=True,
+        tracking=True,
     )
 
     @api.onchange("routing_id")
@@ -17,7 +22,10 @@ class MrpBom(models.Model):
         if self.routing_id and self.routing_id.operation_ids:
             new_operations = opeartion_model.browse()
             for template_operation in self.routing_id.operation_ids:
-                operation_data = template_operation.read(load="_classic_write")[0]
+                operation_data = template_operation.read(
+                    FIELDS_TO_SYNC, load="_classic_write"
+                )[0]
+                operation_data.pop("id")
                 if "operation_ids" in operation_data:
                     operation_data.pop("operation_ids")
                 operation_data.update(

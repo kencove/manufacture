@@ -1,6 +1,8 @@
 # Copyright 2021 ForgeFlow S.L.
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
-from odoo import fields, models
+from odoo import api, fields, models
+
+from .mrp_routing_workcenter_template import FIELDS_TO_SYNC
 
 
 class MrpRoutingWorkcenter(models.Model):
@@ -10,7 +12,7 @@ class MrpRoutingWorkcenter(models.Model):
     template_id = fields.Many2one(
         comodel_name="mrp.routing.workcenter.template",
         string="Template",
-        readonly=True,
+        readonly=False,
     )
 
     on_template_change = fields.Selection(
@@ -22,3 +24,12 @@ class MrpRoutingWorkcenter(models.Model):
         required=False,
         default="nothing",
     )
+
+    @api.onchange("template_id")
+    def onchange_template_id(self):
+        if self.template_id:
+            to_update_data = self.template_id.read(
+                FIELDS_TO_SYNC, load="_classic_wirte"
+            )[0]
+            to_update_data.pop("id")
+            self.update(to_update_data)

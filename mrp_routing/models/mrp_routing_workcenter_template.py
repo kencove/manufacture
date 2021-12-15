@@ -14,6 +14,7 @@ FIELDS_TO_SYNC = [
     "time_mode",
     "time_mode_batch",
     "time_cycle_manual",
+    "on_template_change",
 ]
 
 
@@ -71,6 +72,15 @@ class MrpRoutingWorkcenterTemplate(models.Model):
         inverse_name="template_id",
         string="Operations",
         required=False,
+    )
+    on_template_change = fields.Selection(
+        string="On template change?",
+        selection=[
+            ("nothing", "Do nothing"),
+            ("sync", "Sync"),
+        ],
+        required=False,
+        default="nothing",
     )
 
     def write(self, values):
