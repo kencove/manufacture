@@ -27,10 +27,7 @@ class MrpRouting(models.Model):
         "res.company", "Company", default=lambda self: self.env.company
     )
     bom_ids = fields.One2many(
-        comodel_name='mrp.bom',
-        inverse_name='routing_id',
-        string='Boms',
-        required=False
+        comodel_name="mrp.bom", inverse_name="routing_id", string="Boms", required=False
     )
 
     @api.model
@@ -43,13 +40,17 @@ class MrpRouting(models.Model):
 
     def write(self, values):
         res = super(MrpRouting, self).write(values)
-        if 'operation_ids' in values:
+        if "operation_ids" in values:
             for rec in self:
                 for bom in rec.bom_ids:
-                    operations_not_synced = rec.operation_ids - bom.operation_ids.mapped('template_id')
+                    operations_not_synced = (
+                        rec.operation_ids - bom.operation_ids.mapped("template_id")
+                    )
                     for operation in operations_not_synced:
                         operation.create_operation_from_template(bom)
-                    operations_to_delete = bom.operation_ids.filtered(lambda x: x.template_id.id not in rec.operation_ids.ids)
+                    operations_to_delete = bom.operation_ids.filtered(
+                        lambda x: x.template_id.id not in rec.operation_ids.ids
+                    )
                     if operations_to_delete:
                         operations_to_delete.unlink()
         return res
