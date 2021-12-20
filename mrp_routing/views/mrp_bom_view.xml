@@ -11,6 +11,10 @@
                     <label for="routing_id" />
                     <field name="routing_id" />
                 </xpath>
+                <xpath expr="//field[@name='operation_ids']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('type','not in',('normal','phantom'))], 'readonly': [('routing_id', '!=', False)]}</attribute>
+                    <attribute name="force_save">1</attribute>
+                </xpath>
             </field>
         </record>
 

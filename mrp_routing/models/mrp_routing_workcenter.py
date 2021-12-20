@@ -22,7 +22,7 @@ class MrpRoutingWorkcenter(models.Model):
             ("sync", "Sync"),
         ],
         required=False,
-        default="nothing",
+        default="sync",
     )
 
     @api.onchange("template_id")

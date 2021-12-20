@@ -31,6 +31,7 @@ class MrpBom(models.Model):
                 operation_data.update(
                     {
                         "template_id": template_operation.id,
+                        "on_template_change": "sync",
                     }
                 )
                 new_operations |= opeartion_model.new(operation_data)

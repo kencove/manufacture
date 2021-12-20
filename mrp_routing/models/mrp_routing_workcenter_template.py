@@ -1,7 +1,7 @@
 # Copyright 2021 ForgeFlow S.L.
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-from odoo import fields, models
+from odoo import fields, models, api
 
 FIELDS_TO_SYNC = [
     "name",
@@ -80,8 +80,38 @@ class MrpRoutingWorkcenterTemplate(models.Model):
             ("sync", "Sync"),
         ],
         required=False,
-        default="nothing",
+        default="sync",
     )
+    routing_ids = fields.Many2many(
+        comodel_name='mrp.routing',
+        string='Routings'
+    )
+
+    def create_operation_from_template(self, bom):
+        operation_model = self.env['mrp.routing.workcenter']
+        for operation in self:
+            operation_data = operation.read(FIELDS_TO_SYNC, load="_classic_write")[0]
+            operation_data.update({
+                'bom_id': bom.id,
+                'template_id': operation.id,
+                'on_template_change': 'sync',
+            })
+            operation_model.create(operation_data)
+
+    @api.model_create_multi
+    def create(self, values):
+        recs = super(MrpRoutingWorkcenterTemplate, self).create(values)
+        for rec in self:
+            for bom in rec.mapped('routing_ids.bom_ids'):
+                rec.create_operation_from_template(bom)
+        return recs
+
+    def unlink(self):
+        for rec in self:
+            synced_records = rec.operation_ids.filtered(lambda x: x.on_template_change == 'sync')
+            if synced_records:
+                synced_records.unlink()
+        return super(MrpRoutingWorkcenterTemplate, self).unlink()
 
     def write(self, values):
         res = super(MrpRoutingWorkcenterTemplate, self).write(values)

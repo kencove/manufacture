@@ -10,6 +10,7 @@
                     <field name="sequence" widget="handle" />
                     <field name="name" />
                     <field name="workcenter_id" />
+                    <field name="routing_ids" widget="many2many_tags" />
                 </tree>
             </field>
         </record>
@@ -28,6 +29,7 @@
                                     context="{'default_company_id': company_id}"
                                 />
                                 <field name="sequence" groups="base.group_no_one" />
+                                <field name="on_template_change" />
                             </group><group name="workorder">
                                 <field name="time_mode" widget="radio" />
                                 <label
@@ -82,6 +84,9 @@
                                         attrs="{'invisible':  [('worksheet_type', '!=', 'text')]}"
                                     />
                                 </group>
+                            </page>
+                            <page string="Routings" name="routings">
+                                <field name="routing_ids" />
                             </page>
                         </notebook>
                     </sheet>
