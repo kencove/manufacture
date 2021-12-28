@@ -27,7 +27,11 @@ class MrpRouting(models.Model):
         "res.company", "Company", default=lambda self: self.env.company
     )
     bom_ids = fields.One2many(
-        comodel_name="mrp.bom", inverse_name="routing_id", string="Boms", required=False
+        comodel_name="mrp.bom",
+        inverse_name="routing_id",
+        string="Boms",
+        required=False,
+        copy=False,
     )
 
     @api.model

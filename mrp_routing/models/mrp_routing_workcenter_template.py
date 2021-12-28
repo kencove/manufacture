@@ -72,6 +72,7 @@ class MrpRoutingWorkcenterTemplate(models.Model):
         inverse_name="template_id",
         string="Operations",
         required=False,
+        copy=False,
     )
     on_template_change = fields.Selection(
         string="On template change?",
