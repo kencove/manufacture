@@ -144,5 +144,8 @@ class TestMrpBomCosting(TransactionCase):
         supplier = self.component1.seller_ids[0]
         supplier.write({"price": 25.0})
 
+        # Invalidate cache to trigger recompute of dependent fields
+        bom.invalidate_cache()
+
         # Cost should update automatically due to @api.depends
         self.assertEqual(bom.next_production_cost, 25.0)
