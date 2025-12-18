@@ -50,22 +50,6 @@ class TestMrpBomCosting(TransactionCase):
             }
         )
 
-        # Create routing
-        cls.routing = cls.env["mrp.routing"].create(
-            {
-                "name": "Test Routing",
-            }
-        )
-
-        cls.operation = cls.env["mrp.routing.workcenter"].create(
-            {
-                "name": "Assembly",
-                "routing_id": cls.routing.id,
-                "workcenter_id": cls.workcenter.id,
-                "time_cycle": 60.0,  # 60 minutes = 1 hour
-            }
-        )
-
     def test_bom_cost_calculation_materials_only(self):
         """Test cost calculation with only materials (no operations)"""
         bom = self.env["mrp.bom"].create(
@@ -106,7 +90,6 @@ class TestMrpBomCosting(TransactionCase):
                 "product_tmpl_id": self.product_finished.product_tmpl_id.id,
                 "product_qty": 1.0,
                 "type": "normal",
-                "routing_id": self.routing.id,
                 "bom_line_ids": [
                     (
                         0,
