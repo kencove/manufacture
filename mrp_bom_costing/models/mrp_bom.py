@@ -25,6 +25,7 @@ class MrpBom(models.Model):
         "operation_ids.workcenter_id.costs_hour",
         "operation_ids.time_cycle",
         "product_id.seller_ids.price",
+        "product_tmpl_id.seller_ids.price",
     )
     def _compute_next_production_cost(self):
         """
@@ -37,39 +38,16 @@ class MrpBom(models.Model):
         for bom in self:
             total_cost = 0.0
 
-            # Get base product and quantity
-            product = bom.product_id or bom.product_tmpl_id.product_variant_id
-            if not product:
-                bom.next_production_cost = 0.0
-                bom.next_production_cost_write_date = fields.Datetime.now()
-                continue
-
-            # Explode BOM to get all components with their quantities
-            try:
-                bom_data = bom.explode(product, bom.product_qty or 1.0)[0]
-            except Exception:
-                # If explode fails, set cost to 0
-                bom.next_production_cost = 0.0
-                bom.next_production_cost_write_date = fields.Datetime.now()
-                continue
-
-            # Calculate material costs from components
-            for bom_line, line_data in bom_data:
+            # Calculate material costs directly from BOM lines (single-level cost per BOM unit)
+            for bom_line in bom.bom_line_ids:
                 component = bom_line.product_id
-                component_qty = line_data["qty"]
+                component_qty = bom_line.product_qty
 
-                # Get the current or next purchase price for the component
-                purchase_price = 0.0
-
-                # First try to get price from supplier info
+                # Get the current purchase price from supplier info, fallback to standard price
                 seller = component.seller_ids.filtered(
                     lambda s: not s.company_id or s.company_id == bom.company_id
                 )[:1]
-                if seller:
-                    purchase_price = seller.price
-                else:
-                    # Fallback to standard price if no supplier info
-                    purchase_price = component.standard_price
+                purchase_price = seller.price if seller else component.standard_price
 
                 total_cost += component_qty * purchase_price
 
