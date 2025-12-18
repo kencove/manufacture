@@ -21,11 +21,11 @@ class MrpBom(models.Model):
 
     @api.depends(
         "bom_line_ids.product_id",
+        "bom_line_ids.product_id.seller_ids.price",
+        "bom_line_ids.product_id.standard_price",
         "bom_line_ids.product_qty",
         "operation_ids.workcenter_id.costs_hour",
         "operation_ids.time_cycle",
-        "product_id.seller_ids.price",
-        "product_tmpl_id.seller_ids.price",
     )
     def _compute_next_production_cost(self):
         """
